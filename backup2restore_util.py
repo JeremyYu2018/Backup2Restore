@@ -54,13 +54,13 @@ def parse_args():
     parser.add_argument('--restore',dest='restore', type=str, help='choose this restore local file to remote server',default=None)
     parser.add_argument('-h', '--host',dest='host', type=str, help='Host the MySQL database server located',default=None)
     parser.add_argument('-P', '--port', dest='port', type=int, help='MySQL port to use', default=3306)
-    parser.add_argument('-u', '--user', dest='user', type=str, help='MySQL Username to log in as', default='root')
-    parser.add_argument('-p', '--password', dest='password', type=str, help='MySQL Password to use', default='')
+    parser.add_argument('-u', '--user', dest='user', type=str, help='MySQL Username to log in as')
+    parser.add_argument('-p', '--password', dest='password', type=str, help='MySQL Password to use')
     parser.add_argument('-b', '--backup_dir', dest='backup_dir', type=str, help='the directory to store backup', default='/data01/backup')
     parser.add_argument('-B', '--backup_file', dest='backup_file', type=str, help='the file to restore', default=None)
-    parser.add_argument('-s', '--software', type=str, help='MySQL software', default=None)
-    parser.add_argument('--basedir', type=str, help='the directory to store MySQL software', default="/opt/mariadb")
-    parser.add_argument('-d', '--datadir', type=str, help='the directory to store MySQL data', default="/data01/data")
+    parser.add_argument('-s', '--software', type=str, help='MySQL software', default="/opt/mariadb-10.2.6-linux-glibc_214-x86_64.tar.gz")
+    parser.add_argument('--basedir', type=str, help='the directory to store MySQL software')
+    parser.add_argument('-d', '--datadir', type=str, help='the directory to store MySQL data')
     parser.add_argument('--help', dest='help', action='store_true', help='help information', default=False)
     return parser
 
@@ -75,6 +75,10 @@ def command_line_args(args):
         sys.exit(1)
     if get_fs_freespace(args.backup_dir) < 10000:
         raise ValueError('target backup directory too small to dump: backup_dir')
+    if not args.basedir:
+        args.basedir = "/opt/mariadb"+ str(args.port)
+    if not args.datadir:
+        args.datadir = "/data01/data"+ str(args.port)
     return args
 
 def get_fs_freespace(dirname):
@@ -139,6 +143,5 @@ def is_backup_or_restore(arg):
      if not arg in ["--backup", "--restore"]:
         return False
      return True
-
 
 
